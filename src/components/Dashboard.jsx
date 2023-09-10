@@ -1,5 +1,6 @@
 import React from "react";
 import Stats from "./Stats";
+import RecentlySold from "./RecentlySold";
 
 const Dashboard = () => {
   return (
@@ -9,6 +10,7 @@ const Dashboard = () => {
         Dashboard
       </h2>
       <Stats />
+      <RecentlySold/>
     </div>
   );
 };
