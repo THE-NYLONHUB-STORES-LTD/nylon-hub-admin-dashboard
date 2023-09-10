@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.active-link {
+  background-color: #ef6426;
+  color: black;
+  box-shadow: 10px 10px 93px -20px rgba(239, 100, 38, 0.956);
+  -webkit-box-shadow: 10px 10px 93px -20px rgba(239, 100, 38, 0.956);
+  -moz-box-shadow: 10px 10px 93px -20px rgba(239, 100, 38, 0.956);
+}
+
+@media (max-width: 640px) {
+    .sidebar-mobile-closed {
+      transform: translateX(-100%); /* Hide the sidebar on mobile */
+    }
+  }
