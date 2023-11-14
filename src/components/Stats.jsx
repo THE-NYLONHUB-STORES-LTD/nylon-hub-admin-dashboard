@@ -6,7 +6,7 @@ const Stats = () => {
     <div>
       <div className="grid grid-cols-1 md:grid-cols-4 ss:grid-cols-2 gap-8 mt-10">
         <div className="relative bg-white shadow-lg shadow-slate-200 w-full h-[10rem] p-6 rounded-xl">
-          <div className="absolute -top-4 left-3 bg-gradient-to-b from-[#3E3D45] to-[#202020] h-[55px] w-[55px] rounded-xl flex items-center justify-center">
+          <div className="absolute -top-4 left-3 bg-gradient-to-b from-[#3E3D45] to-[#0e1013] h-[55px] w-[55px] rounded-xl flex items-center justify-center">
             <FaMoneyBill size={24} color="white" />
           </div>
           <div className="text-[#7b809a] text-right">
