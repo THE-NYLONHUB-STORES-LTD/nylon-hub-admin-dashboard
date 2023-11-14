@@ -10,7 +10,7 @@ const Dashboard = () => {
         Dashboard
       </h2>
       <Stats />
-      <RecentlySold/>
+      <RecentlySold />
     </div>
   );
 };

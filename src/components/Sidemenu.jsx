@@ -13,7 +13,7 @@ const Sidemenu = ({ isSidebarOpen, closeSidebar }) => {
 
   return (
     <div
-      className={` bg-gradient-to-b from-[#3E3D45] to-[#202020] w-64 h-screen fixed top-0 left-0 overflow-y-auto transition-transform ease-in-out duration-300 transform z-50  ${
+      className={` bg-gradient-to-b from-[#3E3D45] to-[#0e1013] w-64 h-screen fixed top-0 left-0 overflow-y-auto transition-transform ease-in-out duration-300 transform z-50  ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
