@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import LoadingIcons from "react-loading-icons";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 
 const LoginPage = ({ onLogin }) => {
   const [showOTPInput, setShowOTPInput] = useState(false);
@@ -28,16 +27,16 @@ const LoginPage = ({ onLogin }) => {
 
       console.log("Login response status:", response.status); 
 
-      if (response.status === 200) {
-        const otpResponse = await axios.post(
-          "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/generate_otp_code",
-          {
-            email,
-          }
-        );
+      // if (response.status === 200) {
+      //   const otpResponse = await axios.post(
+      //     "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/generate_otp_code",
+      //     {
+      //       email,
+      //     }
+      //   );
 
-        console.log("OTP response status:", otpResponse.status); 
-      }
+      //   console.log("OTP response status:", otpResponse.status); 
+      // }
     } catch (error) {
       console.error("Login failed:", error.message);
       setErrorMessage("failed to login");
@@ -60,6 +59,7 @@ const LoginPage = ({ onLogin }) => {
 
   const handleOTPSubmit = async () => {
     setIsOTPLoading(true);
+  
     if (!otp.includes("")) {
       try {
         // Make a request to verify the OTP
@@ -70,24 +70,17 @@ const LoginPage = ({ onLogin }) => {
             otp_to_verify: otp.join(""),
           }
         );
-
-        console.log("OTP verification response status:", response.status); 
-
-        // If OTP verification is successful, decode the token and send it as a header
+  
+        console.log("OTP verification response status:", response.status);
+  
+        // If OTP verification is successful, decode the token
         if (response.status === 200) {
           const { token } = response.data;
-          const decodedToken = jwtDecode(token);
-
-          // Send the decoded token as a header
-          const config = {
-            headers: { Authorization: `Bearer ${decodedToken}` },
-          };
-
-          const response = await axios.get(
-            "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/verify_otp_code",
-            config
-          );
-
+  
+          // Save the token to localStorage
+          localStorage.setItem('jwt', token);
+  
+          // Proceed to onLogin() only if token is saved successfully
           onLogin();
         }
       } catch (error) {
@@ -98,6 +91,7 @@ const LoginPage = ({ onLogin }) => {
       }
     }
   };
+  
 
   return (
     <div className=" h-screen flex justify-center items-center">
