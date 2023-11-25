@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import LoadingIcons from "react-loading-icons";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 
 const LoginPage = ({ onLogin }) => {
   const [showOTPInput, setShowOTPInput] = useState(false);
   const [otp, setOTP] = useState(["", "", "", ""]);
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState(""); 
+  const [email, setEmail] = useState(""); 
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -15,7 +14,7 @@ const LoginPage = ({ onLogin }) => {
 
   const handleLoginClick = async () => {
     setIsLoading(true);
-    setShowOTPInput(true);
+    setShowOTPInput(true); 
 
     try {
       const response = await axios.post(
@@ -26,22 +25,21 @@ const LoginPage = ({ onLogin }) => {
         }
       );
 
-      console.log("Login response status:", response.status);
+      console.log("Login response status:", response.status); 
 
-      if (response.status === 200) {
-        const otpResponse = await axios.post(
-          "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/generate_otp_code",
-          {
-            email,
-          }
-        );
+      // if (response.status === 200) {
+      //   const otpResponse = await axios.post(
+      //     "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/generate_otp_code",
+      //     {
+      //       email,
+      //     }
+      //   );
 
-        console.log("OTP response status:", otpResponse.status);
-      }
+      //   console.log("OTP response status:", otpResponse.status); 
+      // }
     } catch (error) {
       console.error("Login failed:", error.message);
       setErrorMessage("failed to login");
-      setShowOTPInput(false);
     } finally {
       setIsLoading(false);
     }
@@ -61,10 +59,11 @@ const LoginPage = ({ onLogin }) => {
 
   const handleOTPSubmit = async () => {
     setIsOTPLoading(true);
+  
     if (!otp.includes("")) {
       try {
         // Make a request to verify the OTP
-        const otpResponse = await axios.post(
+        const response = await axios.post(
           "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/verify_otp_code",
           {
             email_to_verify: email,
@@ -72,24 +71,16 @@ const LoginPage = ({ onLogin }) => {
           }
         );
   
-        console.log("OTP verification response status:", otpResponse.status);
+        console.log("OTP verification response status:", response.status);
   
-        // If OTP verification is successful, decode the token and send it as a header
-        if (otpResponse.status === 200) {
-          const decodedToken = jwtDecode(otpResponse.data.token);
-          console.log("Decoded token:", decodedToken);
+        // If OTP verification is successful, decode the token
+        if (response.status === 200) {
+          const { token } = response.data;
   
-          // Create an axios instance with the decoded token in the headers
-          const instance = axios.create({
-            headers: { Authorization: `Bearer ${decodedToken}` },
-          });
+          // Save the token to localStorage
+          localStorage.setItem('jwt', token);
   
-          //  a POST request
-          const response = await instance.post(
-            "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/verify_otp_code"
-          );
-          console.log("Response for post:", response.data);
-  
+          // Proceed to onLogin() only if token is saved successfully
           onLogin();
         }
       } catch (error) {
@@ -100,8 +91,6 @@ const LoginPage = ({ onLogin }) => {
       }
     }
   };
-  
-  
   
 
   return (
@@ -138,7 +127,7 @@ const LoginPage = ({ onLogin }) => {
             <p className=" my-2">Your OTP is valid for 3 minutes</p>
             <button
               className="bg-[#ef6426] hover:bg-[#cb5925] text-white font-bold py-2 px-4 rounded-full"
-              onClick={handleOTPSubmit}
+              onClick={handleOTPSubmit} 
             >
               {isOTPLoading ? (
                 <LoadingIcons.ThreeDots width="30px" />
@@ -150,7 +139,7 @@ const LoginPage = ({ onLogin }) => {
         ) : (
           <>
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Username
+              Username 
             </label>
             <input
               className="border outline-none rounded w-full py-2 px-3 mb-3"
