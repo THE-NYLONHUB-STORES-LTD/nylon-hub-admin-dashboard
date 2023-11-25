@@ -6,8 +6,8 @@ import { jwtDecode } from "jwt-decode";
 const LoginPage = ({ onLogin }) => {
   const [showOTPInput, setShowOTPInput] = useState(false);
   const [otp, setOTP] = useState(["", "", "", ""]);
-  const [username, setUsername] = useState(""); 
-  const [email, setEmail] = useState(""); 
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -15,7 +15,7 @@ const LoginPage = ({ onLogin }) => {
 
   const handleLoginClick = async () => {
     setIsLoading(true);
-    setShowOTPInput(true); 
+    setShowOTPInput(true);
 
     try {
       const response = await axios.post(
@@ -26,7 +26,7 @@ const LoginPage = ({ onLogin }) => {
         }
       );
 
-      console.log("Login response status:", response.status); 
+      console.log("Login response status:", response.status);
 
       if (response.status === 200) {
         const otpResponse = await axios.post(
@@ -36,11 +36,12 @@ const LoginPage = ({ onLogin }) => {
           }
         );
 
-        console.log("OTP response status:", otpResponse.status); 
+        console.log("OTP response status:", otpResponse.status);
       }
     } catch (error) {
       console.error("Login failed:", error.message);
       setErrorMessage("failed to login");
+      setShowOTPInput(false);
     } finally {
       setIsLoading(false);
     }
@@ -63,31 +64,32 @@ const LoginPage = ({ onLogin }) => {
     if (!otp.includes("")) {
       try {
         // Make a request to verify the OTP
-        const response = await axios.post(
+        const otpResponse = await axios.post(
           "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/verify_otp_code",
           {
             email_to_verify: email,
             otp_to_verify: otp.join(""),
           }
         );
-
-        console.log("OTP verification response status:", response.status); 
-
+  
+        console.log("OTP verification response status:", otpResponse.status);
+  
         // If OTP verification is successful, decode the token and send it as a header
-        if (response.status === 200) {
-          const { token } = response.data;
-          const decodedToken = jwtDecode(token);
-
-          // Send the decoded token as a header
-          const config = {
+        if (otpResponse.status === 200) {
+          const decodedToken = jwtDecode(otpResponse.data.token);
+          console.log("Decoded token:", decodedToken);
+  
+          // Create an axios instance with the decoded token in the headers
+          const instance = axios.create({
             headers: { Authorization: `Bearer ${decodedToken}` },
-          };
-
-          const response = await axios.get(
-            "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/verify_otp_code",
-            config
+          });
+  
+          //  a POST request
+          const response = await instance.post(
+            "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/verify_otp_code"
           );
-
+          console.log("Response for post:", response.data);
+  
           onLogin();
         }
       } catch (error) {
@@ -98,6 +100,9 @@ const LoginPage = ({ onLogin }) => {
       }
     }
   };
+  
+  
+  
 
   return (
     <div className=" h-screen flex justify-center items-center">
@@ -133,7 +138,7 @@ const LoginPage = ({ onLogin }) => {
             <p className=" my-2">Your OTP is valid for 3 minutes</p>
             <button
               className="bg-[#ef6426] hover:bg-[#cb5925] text-white font-bold py-2 px-4 rounded-full"
-              onClick={handleOTPSubmit} 
+              onClick={handleOTPSubmit}
             >
               {isOTPLoading ? (
                 <LoadingIcons.ThreeDots width="30px" />
@@ -145,7 +150,7 @@ const LoginPage = ({ onLogin }) => {
         ) : (
           <>
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Username 
+              Username
             </label>
             <input
               className="border outline-none rounded w-full py-2 px-3 mb-3"
