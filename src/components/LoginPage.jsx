@@ -18,7 +18,7 @@ const LoginPage = ({ onLogin }) => {
 
     try {
       const response = await axios.post(
-        "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/login",
+        "https://3gl1qmkg-4000.uks1.devtunnels.ms/nylonhub/v1/login",
         {
           username,
           password,
@@ -64,7 +64,7 @@ const LoginPage = ({ onLogin }) => {
       try {
         // Make a request to verify the OTP
         const response = await axios.post(
-          "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/verify_otp_code",
+          "https://3gl1qmkg-4000.uks1.devtunnels.ms/nylonhub/v1/verify_otp_code",
           {
             email_to_verify: email,
             otp_to_verify: otp.join(""),

@@ -50,7 +50,7 @@ const Stats = () => {
             <FaUserPlus size={24} color="white" />
           </div>
           <div className="text-[#7b809a] text-right">
-            <h1>New Client's</h1>
+            <h1>Pending Orders</h1>
             <h1 className="font-bold text-3xl text-[#344767]">100</h1>
           </div>
 
@@ -70,8 +70,8 @@ const Stats = () => {
             <FaDollarSign size={24} color="white" />
           </div>
           <div className="text-[#7b809a] text-right">
-            <h1>Sales</h1>
-            <h1 className="font-bold text-3xl text-[#344767]">₦305,000</h1>
+            <h1>Completed Order</h1>
+            <h1 className="font-bold text-3xl text-[#344767]">₦305,000 </h1>
           </div>
 
           <div className="h-[2px] w-full mt-5  bg-gradient-to-r from-[#ffffff] via-[#dddddd] to-white"></div>
