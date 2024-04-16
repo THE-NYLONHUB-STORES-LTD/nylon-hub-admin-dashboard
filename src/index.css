@@ -11,8 +11,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loader {
@@ -24,9 +28,32 @@
   animation: spin 2s linear infinite;
 }
 
+/* Loading state for submit button */
+.loading {
+  opacity: 0.5; /* Faded appearance */
+  cursor: progress; /* Change cursor to progress */
+  pointer-events: none; /* Disable pointer events */
+  background-color: #1c1d21;
+}
+
+/* Loading indicator */
+.loading::after {
+  content: ""; /* Empty content */
+  width: 32px; /* Width of the loading indicator */
+  height: 32px; /* Height of the loading indicator */
+  border: 10px solid #ff6347; /* Border color */
+  border-radius: 70%; /* Rounded shape */
+  border-top-color: transparent; /* Transparent top border */
+  animation: spin 0.8s linear infinite; /* Rotation animation */
+  position: absolute; /* Position absolute */
+  top: 50%; /* Align to center vertically */
+  left: 50%; /* Align to center horizontally */
+  margin-top: -6px; /* Adjust top margin to center vertically */
+  margin-left: -6px; /* Adjust left margin to center horizontally */
+}
 
 @media (max-width: 640px) {
-    .sidebar-mobile-closed {
-      transform: translateX(-100%); /* Hide the sidebar on mobile */
-    }
+  .sidebar-mobile-closed {
+    transform: translateX(-100%); /* Hide the sidebar on mobile */
   }
+}
