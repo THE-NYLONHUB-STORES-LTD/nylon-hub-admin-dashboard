@@ -31,6 +31,20 @@ const RecentlySold = () => {
     fetchData();
   }, []);
 
+  // Function to apply background color based on order status
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-200";
+      case "completed":
+        return "bg-green-200";
+      case "failed":
+        return "bg-red-200";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div className="bg-white shadow-lg shadow-slate-200 w-full p-4 mt-8 rounded-xl">
       <div className=" ">
@@ -71,7 +85,20 @@ const RecentlySold = () => {
                   </td>
                   <td className="py-2">{item.name_of_buyer}</td>
                   <td className="py-2">{item.total_price}</td>
-                  <td className="py-2">{item.order_status}</td>
+                  <td className="py-2">
+                    <div
+                      className={`rounded-lg ${getStatusColor(
+                        item.order_status
+                      )}`}
+                      style={{
+                        display: "inline-block",
+                        width: "fit-content",
+                        padding: "0.5rem 1rem",
+                      }}
+                    >
+                      {item.order_status}
+                    </div>
+                  </td>
                   {/* Stock Left column removed */}
                 </tr>
               ))}
