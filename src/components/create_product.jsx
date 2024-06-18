@@ -25,7 +25,7 @@ const CreateProduct = () => {
 
     // Send POST request...
     const url =
-      "https://3gl1qmkg-4000.uks1.devtunnels.ms/nylonhub/v1/add_products";
+      "https://pbwkbq0l-4000.uks1.devtunnels.ms/nylonhub/v1/add_products";
     const token = localStorage.getItem("jwt");
     fetch(url, {
       method: "POST",

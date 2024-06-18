@@ -11,7 +11,7 @@ const Stats = () => {
   const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async () => { 
       try {
         const token = localStorage.getItem("jwt");
         if (!token) {
@@ -20,7 +20,7 @@ const Stats = () => {
         }
 
         const response = await fetch(
-          "https://3gl1qmkg-4000.uks1.devtunnels.ms/nylonhub/v1/getadminstats",
+          "https://pbwkbq0l-4000.uks1.devtunnels.ms/nylonhub/v1/getadminstats",
           {
             method: "GET",
             headers: {

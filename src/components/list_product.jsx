@@ -14,7 +14,7 @@ const ListProduct = () => {
 
       // Fetch products with JWT token in headers
       const response = await fetch(
-        "https://3gl1qmkg-4000.uks1.devtunnels.ms/nylonhub/v1/products/getallproducts",
+        "https://pbwkbq0l-4000.uks1.devtunnels.ms/nylonhub/v1/products/getallproducts",
         {
           method: "PUT",
           headers: {

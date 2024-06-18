@@ -11,7 +11,7 @@ const RecentlySold = () => {
       try {
         const token = localStorage.getItem("jwt");
         const response = await fetch(
-          "https://3gl1qmkg-4000.uks1.devtunnels.ms/nylonhub/v1/products/getcarts",
+          "https://pbwkbq0l-4000.uks1.devtunnels.ms/nylonhub/v1/products/getcarts",
           {
             method: "GET",
             headers: {
