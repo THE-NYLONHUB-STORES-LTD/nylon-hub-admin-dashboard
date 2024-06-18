@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import LoadingIcons from "react-loading-icons";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginPage = ({ onLogin }) => {
   const [showOTPInput, setShowOTPInput] = useState(false);
   const [otp, setOTP] = useState(["", "", "", ""]);
-  const [username, setUsername] = useState(""); 
-  const [email, setEmail] = useState(""); 
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -14,32 +16,22 @@ const LoginPage = ({ onLogin }) => {
 
   const handleLoginClick = async () => {
     setIsLoading(true);
-    setShowOTPInput(true); 
+    setShowOTPInput(true);
 
     try {
       const response = await axios.post(
-        "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/login",
+        "https://pbwkbq0l-4000.uks1.devtunnels.ms/nylonhub/v1/login",
         {
           username,
           password,
         }
       );
 
-      console.log("Login response status:", response.status); 
-
-      // if (response.status === 200) {
-      //   const otpResponse = await axios.post(
-      //     "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/generate_otp_code",
-      //     {
-      //       email,
-      //     }
-      //   );
-
-      //   console.log("OTP response status:", otpResponse.status); 
-      // }
+      console.log("Login response status:", response.status);
     } catch (error) {
       console.error("Login failed:", error.message);
       setErrorMessage("failed to login");
+      toast.error("failed to login");
     } finally {
       setIsLoading(false);
     }
@@ -56,30 +48,30 @@ const LoginPage = ({ onLogin }) => {
       document.getElementById(`otp-input-${index + 1}`).focus();
     }
   };
-
+// What I want to do is that I want to make the app to not reload back to login if the verify otp is valid
   const handleOTPSubmit = async () => {
     setIsOTPLoading(true);
-  
+
     if (!otp.includes("")) {
       try {
         // Make a request to verify the OTP
         const response = await axios.post(
-          "https://3gl1qmkg-4000.uks1.devtunnels.ms/admin_service/verify_otp_code",
+          "https://pbwkbq0l-4000.uks1.devtunnels.ms/nylonhub/v1/verify_otp_code",
           {
             email_to_verify: email,
             otp_to_verify: otp.join(""),
           }
         );
-  
+
         console.log("OTP verification response status:", response.status);
-  
+
         // If OTP verification is successful, decode the token
         if (response.status === 200) {
           const { token } = response.data;
-  
+
           // Save the token to localStorage
-          localStorage.setItem('jwt', token);
-  
+          localStorage.setItem("jwt", token);
+
           // Proceed to onLogin() only if token is saved successfully
           onLogin();
         }
@@ -91,7 +83,6 @@ const LoginPage = ({ onLogin }) => {
       }
     }
   };
-  
 
   return (
     <div className=" h-screen flex justify-center items-center">
@@ -127,7 +118,7 @@ const LoginPage = ({ onLogin }) => {
             <p className=" my-2">Your OTP is valid for 3 minutes</p>
             <button
               className="bg-[#ef6426] hover:bg-[#cb5925] text-white font-bold py-2 px-4 rounded-full"
-              onClick={handleOTPSubmit} 
+              onClick={handleOTPSubmit}
             >
               {isOTPLoading ? (
                 <LoadingIcons.ThreeDots width="30px" />
@@ -139,7 +130,7 @@ const LoginPage = ({ onLogin }) => {
         ) : (
           <>
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Username 
+              Username
             </label>
             <input
               className="border outline-none rounded w-full py-2 px-3 mb-3"
