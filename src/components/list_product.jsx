@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from "react";
 
 const ListProduct = () => {
-  // State to store the fetched products
   const [products, setProducts] = useState([]);
-  // State to track loading state
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 10;
 
-  // Function to fetch products asynchronously
   const fetchProducts = async () => {
     try {
-      // Retrieve JWT token from local storage
       const token = localStorage.getItem("jwt");
-
-      // Fetch products with JWT token in headers
       const response = await fetch(
         "https://pbwkbq0l-4000.uks1.devtunnels.ms/nylonhub/v1/products/getallproducts",
         {
@@ -24,112 +20,187 @@ const ListProduct = () => {
         }
       );
 
-      // Check if the response is successful
       if (!response.ok) {
         throw new Error("Failed to fetch products");
       }
 
-      // Parse response JSON
       const data = await response.json();
-
-      // Set the fetched products in state
       setProducts(data.data);
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
-      // Set loading state to false when fetching is done
       setIsLoading(false);
     }
   };
 
-  // Fetch products when the component mounts
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  const ProductCard = ({ product }) => {
+    const [showMore, setShowMore] = useState({});
+
+    const handleShowMore = (colorName) => {
+      setShowMore((prevState) => ({
+        ...prevState,
+        [colorName]: !prevState[colorName],
+      }));
+    };
+
+    return (
+      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+        <div className="p-6">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            {product.product_name}
+          </h2>
+          <p className="text-sm text-gray-600 mt-2">
+            {product.product_description}
+          </p>
+          <img
+            src={product.product_image_url?.[0]}
+            alt="Product Image"
+            className="mt-4 w-full h-48 object-cover rounded-md"
+          />
+          <p className="text-lg text-gray-800 mt-4">
+            ₦{product.price_range?.smallest_price} - ₦
+            {product.price_range?.highest_price}
+          </p>
+          <p className="text-sm text-gray-600 mt-2">
+            {product.product_alternative_use}
+          </p>
+          <p className="text-sm text-gray-600 mt-2">
+            Category ID: {product.product_category_id}
+          </p>
+          <p className="text-sm text-gray-600 mt-2">
+            Total in Stock: {product.total_product_in_stock}
+          </p>
+
+          <div className="mt-4">
+            <h3 className="text-lg font-medium text-gray-900">
+              Product Properties:
+            </h3>
+            {product.product_properties?.map((property, index) => (
+              <div key={index} className="mt-2">
+                <p className="text-sm text-gray-600 flex items-center">
+                  <strong className="text-blue-500">Color:</strong>{" "}
+                  <span
+                    className="inline-block px-2 py-1 rounded-lg text-white ml-2"
+                    style={{
+                      backgroundColor: property.product_color.color_code,
+                    }}
+                  >
+                    {property.product_color.name} (
+                    {property.product_dimension.length})
+                  </span>
+                </p>
+                <ul className="mt-2 space-y-2">
+                  {property.product_dimension
+                    ?.slice(
+                      0,
+                      showMore[property.product_color.name]
+                        ? property.product_dimension.length
+                        : 2
+                    )
+                    .map((dimension, idx) => (
+                      <li
+                        key={idx}
+                        className="p-4 border border-gray-200 rounded-lg"
+                      >
+                        <div className="flex justify-between items-center mb-2">
+                          <strong className="text-gray-700">Size:</strong>
+                          <span className="text-gray-600">
+                            {dimension.size}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center mb-2">
+                          <strong className="text-gray-700">Price:</strong>
+                          <span className="text-gray-600">
+                            ₦{dimension.price}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center mb-2">
+                          <strong className="text-gray-700">In Stock:</strong>
+                          <span className="text-gray-600">
+                            {dimension.product_in_stock}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <strong className="text-gray-700">Capacity:</strong>
+                          <span className="text-gray-600">
+                            {dimension.product_capacity}
+                          </span>
+                        </div>
+                      </li>
+                    ))}
+                </ul>
+                {property.product_dimension.length > 2 && (
+                  <button
+                    onClick={() => handleShowMore(property.product_color.name)}
+                    className="text-blue-600 mt-2 focus:outline-none"
+                  >
+                    {showMore[property.product_color.name]
+                      ? "Show Less"
+                      : "Show More"}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = products.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  const nextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  const prevPage = () => {
+    setCurrentPage((prevPage) => prevPage - 1);
+  };
+
   return (
-    <div className="py-28 px-4 sm:px-24 bg-[#f0f2f5]">
-      {/* Show loading message if isLoading is true */}
+    <div className="py-28 px-4 sm:px-24 bg-[#f0f2f5] min-h-screen">
       {isLoading ? (
-        <p className="loading">Loading...</p>
+        <p className="text-center text-xl text-gray-700">Loading...</p>
       ) : (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-          <h1 className="text-3xl font-semibold text-gray-900 mb-4">
+          <h1 className="text-3xl font-semibold text-gray-900 mb-6">
             List of Products
           </h1>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {/* Render products */}
-            {products.map((product) => (
-              <div
-                key={product._id}
-                className="bg-white rounded-lg shadow-lg overflow-hidden"
-              >
-                <div className="p-6">
-                  <h2 className="text-xl font-medium text-gray-900">
-                    {product.product_name}
-                  </h2>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Description: {product.product_description}
-                  </p>
-                  <img
-                    src={product.product_image_url?.[0]}
-                    alt="Product Image"
-                    className="mt-4 rounded-md"
-                  />
-                  <p className="text-sm text-gray-600 mt-4">
-                    Price Range: ₦{product.price_range?.smallest_price} - ₦
-                    {product.price_range?.highest_price}
-                  </p>
-                  <hr className="my-4 border-gray-300" />
-                  <p className="text-sm text-gray-600">
-                    Alternative Use: {product.product_alternative_use}
-                  </p>
-                  <hr className="my-4 border-gray-300" />
-                  <p className="text-sm text-gray-600">
-                    Category ID: {product.product_category_id}
-                  </p>
-                  <hr className="my-4 border-gray-300" />
-                  <p className="text-sm text-gray-600">
-                    Total Products in Stock: {product.total_product_in_stock}
-                  </p>
-                  <hr className="my-4 border-gray-300" />
-                  <h3 className="text-lg font-medium text-gray-900 mt-6">
-                    Product Properties:
-                  </h3>
-                  <ul className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-                    {/* Render product properties */}
-                    {product.product_properties?.map((property) =>
-                      property.product_dimension?.map((dimension) => (
-                        <li
-                          key={dimension?._id}
-                          className="text-sm text-gray-600"
-                        >
-                          <strong className="font-medium">Color:</strong>{" "}
-                          {property.product_color?.name}
-                          <br />
-                          <strong className="font-medium">Size:</strong>{" "}
-                          {dimension?.size}
-                          <br />
-                          <strong className="font-medium">Price:</strong>{" "}
-                          {dimension?.price}
-                          <br />
-                          <strong className="font-medium">
-                            In Stock:
-                          </strong>{" "}
-                          {dimension?.product_in_stock}
-                          <br />
-                          <strong className="font-medium">
-                            Capacity:
-                          </strong>{" "}
-                          {dimension?.product_capacity}
-                          <hr className="my-4 border-gray-300" />
-                        </li>
-                      ))
-                    )}
-                  </ul>
-                </div>
-              </div>
+            {currentProducts.map((product) => (
+              <ProductCard key={product._id} product={product} />
             ))}
+          </div>
+          <div className="flex justify-between items-center mt-8">
+            <button
+              onClick={prevPage}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="text-gray-700">
+              Page {currentPage} of{" "}
+              {Math.ceil(products.length / productsPerPage)}
+            </span>
+            <button
+              onClick={nextPage}
+              disabled={
+                currentPage === Math.ceil(products.length / productsPerPage)
+              }
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
+            >
+              Next
+            </button>
           </div>
         </div>
       )}
