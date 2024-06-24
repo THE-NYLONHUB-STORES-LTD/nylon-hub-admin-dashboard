@@ -192,7 +192,7 @@ const CreateProduct = () => {
             name="product_name"
             value={formData.product_name}
             onChange={handleInputChange}
-            className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
 
@@ -209,7 +209,7 @@ const CreateProduct = () => {
             rows="4"
             value={formData.product_description}
             onChange={handleInputChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           ></textarea>
         </div>
 
@@ -226,7 +226,7 @@ const CreateProduct = () => {
             name="product_capacity"
             value={formData.product_capacity}
             onChange={handleInputChange}
-            className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
 
@@ -244,7 +244,7 @@ const CreateProduct = () => {
               name="smallest_price"
               value={formData.price_range.smallest_price}
               onChange={handlePriceRangeChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
 
@@ -261,7 +261,7 @@ const CreateProduct = () => {
               name="highest_price"
               value={formData.price_range.highest_price}
               onChange={handlePriceRangeChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
         </div>
@@ -279,7 +279,7 @@ const CreateProduct = () => {
             name="product_alternative_use"
             value={formData.product_alternative_use}
             onChange={handleInputChange}
-            className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
 
@@ -295,7 +295,7 @@ const CreateProduct = () => {
             name="product_category_id"
             value={formData.product_category_id}
             onChange={handleInputChange}
-            className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           >
             <option value="">Select a category</option>
             {categories.map((category) => (
@@ -318,7 +318,7 @@ const CreateProduct = () => {
             id="uploaded_product_image"
             name="uploaded_product_image"
             onChange={handleFileChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
 
@@ -340,7 +340,7 @@ const CreateProduct = () => {
               name="shape"
               value={formData.product_specification.shape}
               onChange={handleInputChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
 
@@ -357,7 +357,7 @@ const CreateProduct = () => {
               name="model_number"
               value={formData.product_specification.model_number}
               onChange={handleInputChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
 
@@ -374,7 +374,7 @@ const CreateProduct = () => {
               name="feature"
               value={formData.product_specification.feature}
               onChange={handleInputChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
 
@@ -391,7 +391,7 @@ const CreateProduct = () => {
               name="form"
               value={formData.product_specification.form}
               onChange={handleInputChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
 
@@ -408,7 +408,7 @@ const CreateProduct = () => {
               name="thickness"
               value={formData.product_specification.thickness}
               onChange={handleInputChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
 
@@ -425,7 +425,7 @@ const CreateProduct = () => {
               name="applicable_space"
               value={formData.product_specification.applicable_space}
               onChange={handleInputChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
 
@@ -442,7 +442,7 @@ const CreateProduct = () => {
               name="use"
               value={formData.product_specification.use}
               onChange={handleInputChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
 
@@ -459,7 +459,7 @@ const CreateProduct = () => {
               name="material"
               value={formData.product_specification.material}
               onChange={handleInputChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
 
@@ -476,7 +476,7 @@ const CreateProduct = () => {
               name="pattern"
               value={formData.product_specification.pattern}
               onChange={handleInputChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
 
@@ -493,7 +493,7 @@ const CreateProduct = () => {
               name="type"
               value={formData.product_specification.type}
               onChange={handleInputChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
 
@@ -510,7 +510,7 @@ const CreateProduct = () => {
               name="fresh_wrap"
               value={formData.product_specification.fresh_wrap}
               onChange={handleInputChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
 
@@ -527,7 +527,7 @@ const CreateProduct = () => {
               name="reusable_food_storage"
               value={formData.product_specification.reusable_food_storage}
               onChange={handleInputChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
 
@@ -544,7 +544,7 @@ const CreateProduct = () => {
               name="thickened"
               value={formData.product_specification.thickened}
               onChange={handleInputChange}
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full h-12 pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
         </div>

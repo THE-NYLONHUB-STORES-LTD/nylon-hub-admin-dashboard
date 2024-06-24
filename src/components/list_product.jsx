@@ -4,7 +4,7 @@ const ListProduct = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 10;
+  const productsPerPage = 4;
 
   const fetchProducts = async () => {
     try {
@@ -74,6 +74,24 @@ const ListProduct = () => {
           <p className="text-sm text-gray-600 mt-2">
             Total in Stock: {product.total_product_in_stock}
           </p>
+
+          {product.product_specification && (
+            <div className="mt-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                Product Specification:
+              </h3>
+              <ul className="mt-2 space-y-2">
+                {Object.entries(product.product_specification).map(
+                  ([key, value]) => (
+                    <li key={key} className="flex justify-between items-center">
+                      <strong className="text-gray-700">{key}:</strong>
+                      <span className="text-gray-600">{value}</span>
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
+          )}
 
           <div className="mt-4">
             <h3 className="text-lg font-medium text-gray-900">
