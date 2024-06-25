@@ -4,6 +4,8 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
+const allowedExtensions = ["png", "jpeg", "jpg"];
+
 const CreateProduct = () => {
   const [formData, setFormData] = useState({
     product_name: "",
@@ -32,7 +34,7 @@ const CreateProduct = () => {
       thickened: "",
     },
   });
-  const [uploadedImage, setUploadedImage] = useState(null);
+  const [uploadedImages, setUploadedImages] = useState([]);
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -97,7 +99,19 @@ const CreateProduct = () => {
   };
 
   const handleFileChange = (e) => {
-    setUploadedImage(e.target.files[0]);
+    const files = Array.from(e.target.files);
+    const validFiles = files.filter((file) =>
+      allowedExtensions.includes(file.type.split("/")[1])
+    );
+
+    if (validFiles.length !== files.length) {
+      toast.error(
+        "Some files have invalid extensions. Allowed extensions are .png, .jpeg, .jpg"
+      );
+      e.target.value = null; // Clear the input value to remove invalid files
+    }
+
+    setUploadedImages((prevImages) => [...prevImages, ...validFiles]);
   };
 
   const validateForm = () => {
@@ -112,7 +126,7 @@ const CreateProduct = () => {
     if (!formData.product_alternative_use)
       return "Product alternative use is required.";
     if (!formData.product_category_id) return "Product category is required.";
-    if (!uploadedImage) return "Product image is required.";
+    if (uploadedImages.length === 0) return "Product image is required.";
     const spec = formData.product_specification;
     if (!spec.shape) return "Product specification shape is required.";
     if (!spec.model_number)
@@ -146,7 +160,9 @@ const CreateProduct = () => {
       "https://pbwkbq0l-4000.uks1.devtunnels.ms/nylonhub/v1/add_products";
 
     const form = new FormData();
-    form.append("uploaded_product_image", uploadedImage);
+    uploadedImages.forEach((image, index) => {
+      form.append(`uploaded_product_image_${index}`, image);
+    });
     form.append("product_data", JSON.stringify(formData));
 
     console.log("Form data being sent:", formData);
@@ -308,16 +324,17 @@ const CreateProduct = () => {
 
         <div>
           <label
-            htmlFor="uploaded_product_image"
+            htmlFor="uploaded_product_images"
             className="block text-sm font-medium text-gray-700"
           >
-            Upload Product Image
+            Upload Product Images
           </label>
           <input
             type="file"
-            id="uploaded_product_image"
-            name="uploaded_product_image"
+            id="uploaded_product_images"
+            name="uploaded_product_images"
             onChange={handleFileChange}
+            multiple
             className="mt-1 block w-full pl-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>

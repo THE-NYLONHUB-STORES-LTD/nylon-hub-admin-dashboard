@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LoadingIcons from "react-loading-icons";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -12,6 +12,40 @@ const LoginPage = ({ onLogin }) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isOTPLoading, setIsOTPLoading] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      try {
+        const token = localStorage.getItem("jwt");
+        if (!token) {
+          return;
+        }
+
+        const response = await axios.post(
+          "https://pbwkbq0l-4000.uks1.devtunnels.ms/nylonhub/v1/security/verifyToken",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          setIsAuthorized(true);
+          onLogin();
+        } else {
+          setIsAuthorized(false);
+        }
+      } catch (error) {
+        console.error("Error verifying token:", error);
+        setIsAuthorized(false);
+      }
+    };
+
+    verifyToken();
+  }, [onLogin]);
 
   const handleLoginClick = async () => {
     setIsLoading(true);
@@ -81,6 +115,10 @@ const LoginPage = ({ onLogin }) => {
       }
     }
   };
+
+  if (isAuthorized) {
+    return null; // Render nothing while checking authorization
+  }
 
   return (
     <div className="h-screen flex justify-center items-center">
