@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LoadingIcons from "react-loading-icons";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const LoginPage = ({ onLogin }) => {
@@ -10,13 +10,45 @@ const LoginPage = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isOTPLoading, setIsOTPLoading] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      try {
+        const token = localStorage.getItem("jwt");
+        if (!token) {
+          return;
+        }
+
+        const response = await axios.post(
+          "https://pbwkbq0l-4000.uks1.devtunnels.ms/nylonhub/v1/security/verifyToken",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          setIsAuthorized(true);
+          onLogin();
+        } else {
+          setIsAuthorized(false);
+        }
+      } catch (error) {
+        console.error("Error verifying token:", error);
+        setIsAuthorized(false);
+      }
+    };
+
+    verifyToken();
+  }, [onLogin]);
 
   const handleLoginClick = async () => {
     setIsLoading(true);
-    setShowOTPInput(true);
 
     try {
       const response = await axios.post(
@@ -27,34 +59,40 @@ const LoginPage = ({ onLogin }) => {
         }
       );
 
-      console.log("Login response status:", response.status);
+      if (response.status === 200) {
+        toast.success(
+          "Login successful. Please enter the OTP sent to your email."
+        );
+        setEmail(response.data.email); // Assuming the email is returned in the response
+        setShowOTPInput(true);
+      }
     } catch (error) {
       console.error("Login failed:", error.message);
-      setErrorMessage("failed to login");
-      toast.error("failed to login");
+      if (error.response && error.response.status === 401) {
+        toast.error("Wrong password. Please try again.");
+      } else {
+        toast.error("Failed to login");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleOTPChange = (index, value) => {
-    // Update the OTP array with the entered digit
     const newOTP = [...otp];
     newOTP[index] = value;
     setOTP(newOTP);
 
-    // Move to the next input box if a digit is entered
     if (value && index < otp.length - 1) {
       document.getElementById(`otp-input-${index + 1}`).focus();
     }
   };
-// What I want to do is that I want to make the app to not reload back to login if the verify otp is valid
+
   const handleOTPSubmit = async () => {
     setIsOTPLoading(true);
 
     if (!otp.includes("")) {
       try {
-        // Make a request to verify the OTP
         const response = await axios.post(
           "https://pbwkbq0l-4000.uks1.devtunnels.ms/nylonhub/v1/verify_otp_code",
           {
@@ -63,32 +101,30 @@ const LoginPage = ({ onLogin }) => {
           }
         );
 
-        console.log("OTP verification response status:", response.status);
-
-        // If OTP verification is successful, decode the token
         if (response.status === 200) {
           const { token } = response.data;
-
-          // Save the token to localStorage
           localStorage.setItem("jwt", token);
-
-          // Proceed to onLogin() only if token is saved successfully
+          toast.success("OTP verified successfully. You are now logged in.");
           onLogin();
         }
       } catch (error) {
-        // Handle OTP verification error
         console.error("OTP verification failed:", error.message);
+        toast.error("OTP verification failed. Please try again.");
+      } finally {
         setIsOTPLoading(false);
-        setErrorMessage("OTP verification failed");
       }
     }
   };
 
+  if (isAuthorized) {
+    return null; // Render nothing while checking authorization
+  }
+
   return (
-    <div className=" h-screen flex justify-center items-center">
-      <div className=" max-w-lg mx-auto  p-8 bg-[#fff4f4] rounded-md ">
+    <div className="h-screen flex justify-center items-center">
+      <ToastContainer />
+      <div className="max-w-lg mx-auto p-8 bg-[#fff4f4] rounded-md">
         <h2 className="text-2xl font-semibold mb-4">Login</h2>
-        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
         {showOTPInput ? (
           <div>
             <h3 className="text-lg font-semibold mb-4">Enter OTP</h3>
@@ -100,7 +136,7 @@ const LoginPage = ({ onLogin }) => {
               type="email"
               placeholder="Enter your email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              readOnly
             />
             <div className="flex space-x-4">
               {otp.map((digit, index) => (
@@ -115,7 +151,7 @@ const LoginPage = ({ onLogin }) => {
                 />
               ))}
             </div>
-            <p className=" my-2">Your OTP is valid for 3 minutes</p>
+            <p className="my-2">Your OTP is valid for 3 minutes</p>
             <button
               className="bg-[#ef6426] hover:bg-[#cb5925] text-white font-bold py-2 px-4 rounded-full"
               onClick={handleOTPSubmit}
@@ -150,7 +186,7 @@ const LoginPage = ({ onLogin }) => {
               onChange={(e) => setPassword(e.target.value)}
             />
             <button
-              className={`bg-[#ef6426]  text-white font-bold py-2 px-4 rounded-full w-full flex items-center justify-center ${
+              className={`bg-[#ef6426] text-white font-bold py-2 px-4 rounded-full w-full flex items-center justify-center ${
                 isLoading || !username || !password
                   ? "bg-gray-400 cursor-not-allowed"
                   : "hover:bg-[#cb5925]"

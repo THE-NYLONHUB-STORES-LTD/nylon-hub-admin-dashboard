@@ -1,6 +1,7 @@
 import React from "react";
 import Stats from "./Stats";
 import RecentlySold from "./RecentlySold";
+import InHouseApplication from "./inhouse";
 
 const Dashboard = () => {
   return (
@@ -11,6 +12,7 @@ const Dashboard = () => {
       </h2>
       <Stats />
       <RecentlySold />
+      <InHouseApplication />
     </div>
   );
 };
