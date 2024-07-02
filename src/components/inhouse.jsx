@@ -29,8 +29,10 @@ const InHouseApplication = () => {
     name: "",
     email: "",
     mobile: "",
+    address: "",
     paymentMethod: "cash",
     orderId: generateOrderId("", "NYLONHUB"),
+    ref: {}, // Initialize an empty ref object
   });
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -45,6 +47,7 @@ const InHouseApplication = () => {
   const [selectedColorId, setSelectedColorId] = useState(null);
   const [cart, setCart] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -114,6 +117,7 @@ const InHouseApplication = () => {
       name: "",
       email: "",
       mobile: "",
+      address: "",
       paymentMethod: "cash",
       orderId: generateOrderId("", "NYLONHUB"),
     });
@@ -206,6 +210,14 @@ const InHouseApplication = () => {
         item.selectedColor === selectedColor
     );
 
+    const formattedProperties = {
+      color: selectedColor,
+      size: itemDetails.size,
+      capacity: itemDetails.product_capacity,
+      price: itemDetails.price,
+      quantity: quantity,
+    };
+
     if (itemInCart) {
       toast.warn("Item is already in cart with selected size and color!", {
         position: "top-right",
@@ -229,6 +241,7 @@ const InHouseApplication = () => {
           product_description: selectedProduct.product_description,
           selectedColor,
           selectedSize: itemDetails.size,
+          selected_properties: [[formattedProperties]], // Include the selected properties
         },
       ]);
       toast.success("Item added to cart!", {
@@ -320,6 +333,130 @@ const InHouseApplication = () => {
     });
   };
 
+  const validateCustomerDetails = () => {
+    const { name, email, mobile, address } = customerDetails;
+    if (!name)
+      toast.error("Name is required", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    if (!email)
+      toast.error("Email is required", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    if (!mobile)
+      toast.error("Mobile number is required", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    if (!address)
+      toast.error("Address is required", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    return name && email && mobile && address;
+  };
+
+  const handleCheckout = async () => {
+    if (!validateCustomerDetails()) {
+      return;
+    }
+
+    setLoading(true);
+
+    const checkoutData = {
+      name_of_buyer: customerDetails.name,
+      email_of_buyer: customerDetails.email,
+      phone_number_of_buyer: customerDetails.mobile,
+      address_of_buyer: customerDetails.address,
+      items: cart.map((item) => ({
+        _id: item._id,
+        product_name: item.product_name,
+        selected_properties: item.selected_properties.map((propertiesArray) =>
+          propertiesArray.map((property) => ({
+            color: property.color,
+            size: property.size,
+            capacity: property.capacity,
+            price: property.price,
+            quantity: property.quantity,
+          }))
+        ),
+      })),
+      total_price: cart.reduce((acc, item) => acc + item.totalCost, 0),
+      source: "inhouse",
+      order_id: customerDetails.orderId,
+      payment_type: customerDetails.paymentMethod,
+      ref:
+        customerDetails.paymentMethod === "transfer" ? customerDetails.ref : {},
+    };
+
+    try {
+      const response = await axios.post(
+        "https://pbwkbq0l-4000.uks1.devtunnels.ms/nylonhub/v1/products/cart",
+        checkoutData
+      );
+      if (response.status === 200) {
+        toast.success("Checkout successful!", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+
+        // Reset form after successful checkout
+        setCustomerDetails({
+          name: "",
+          email: "",
+          mobile: "",
+          address: "",
+          paymentMethod: "cash",
+          orderId: generateOrderId("", "NYLONHUB"),
+          ref: {},
+        });
+        setCart([]);
+        setSelectedProduct(null);
+        setSearchTerm("");
+        setQuantity(1);
+        setTotalCost(0);
+        setDimension([]);
+        setItemDetails({});
+        setSelectedColor(null);
+        setSelectedId(null);
+        setSelectedColorId(null);
+      } else {
+        toast.error("Checkout failed. Please try again.", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast.error("Checkout failed. Please try again.", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center p-4 space-y-4 md:flex-row md:space-y-0 md:space-x-4">
       <CustomerDetails
@@ -381,12 +518,22 @@ const InHouseApplication = () => {
           </div>
         </div>
       )}
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
+            <h3 className="text-lg font-bold mb-4">
+              Processing your order, please wait...
+            </h3>
+          </div>
+        </div>
+      )}
       <Cart
         cart={cart}
         formatter={formatter}
         handleCartQuantityChange={handleCartQuantityChange}
         handleRemoveFromCart={handleRemoveFromCart}
         handleClearCart={handleClearCart}
+        handleCheckout={handleCheckout}
       />
     </div>
   );
