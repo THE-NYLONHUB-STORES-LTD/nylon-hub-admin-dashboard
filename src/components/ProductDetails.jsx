@@ -48,6 +48,8 @@ const ProductDetails = ({
     });
   };
 
+  const isAddToCartDisabled = !selectedId || quantity <= 0;
+
   const isUpdateButtonDisabled = !cart.some(
     (item) =>
       item._id === selectedProduct._id &&
@@ -170,7 +172,7 @@ const ProductDetails = ({
           <button
             className="disabled:text-gray-300 bg-gray-200 h-8 w-8 flex items-center justify-center rounded-full"
             onClick={decreaseQuantity}
-            disabled={quantity === 1}
+            disabled={quantity === 0}
           >
             <FaMinus size={15} />
           </button>
@@ -196,32 +198,10 @@ const ProductDetails = ({
       <div className="flex items-center gap-x-3 my-4">
         <button
           className={`bg-[#ef6426] w-32 text-sm text-white px-5 py-3 rounded-full ${
-            !selectedColor && selectedProduct.product_properties.length > 0
-              ? "opacity-50 cursor-not-allowed"
-              : ""
+            isAddToCartDisabled ? "opacity-50 cursor-not-allowed" : ""
           } hover:bg-nylon-hb-orange`}
-          disabled={
-            !selectedColor && selectedProduct.product_properties.length > 0
-          }
-          onClick={() => {
-            if (
-              selectedColor ||
-              selectedProduct.product_properties.length === 0
-            ) {
-              handleAddToCart();
-            } else {
-              toast.warn("Please select a color before proceeding!", {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-              });
-            }
-          }}
+          disabled={isAddToCartDisabled}
+          onClick={handleAddToCart}
         >
           Add to cart
         </button>

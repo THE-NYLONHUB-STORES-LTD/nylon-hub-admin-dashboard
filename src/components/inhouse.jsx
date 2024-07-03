@@ -6,6 +6,8 @@ import CustomerDetails from "./CustomerDetails";
 import ProductSelection from "./ProductSelection";
 import ProductDetails from "./ProductDetails";
 import Cart from "./Cart";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const generateOrderId = (customerName, businessName = "NYLONHUB") => {
   const customerInitials = customerName
@@ -29,8 +31,10 @@ const InHouseApplication = () => {
     name: "",
     email: "",
     mobile: "",
+    address: "",
     paymentMethod: "cash",
     orderId: generateOrderId("", "NYLONHUB"),
+    ref: {}, // Initialize an empty ref object
   });
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -45,6 +49,7 @@ const InHouseApplication = () => {
   const [selectedColorId, setSelectedColorId] = useState(null);
   const [cart, setCart] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -114,6 +119,7 @@ const InHouseApplication = () => {
       name: "",
       email: "",
       mobile: "",
+      address: "",
       paymentMethod: "cash",
       orderId: generateOrderId("", "NYLONHUB"),
     });
@@ -206,6 +212,14 @@ const InHouseApplication = () => {
         item.selectedColor === selectedColor
     );
 
+    const formattedProperties = {
+      color: selectedColor,
+      size: itemDetails.size,
+      capacity: itemDetails.product_capacity,
+      price: itemDetails.price,
+      quantity: quantity,
+    };
+
     if (itemInCart) {
       toast.warn("Item is already in cart with selected size and color!", {
         position: "top-right",
@@ -229,6 +243,7 @@ const InHouseApplication = () => {
           product_description: selectedProduct.product_description,
           selectedColor,
           selectedSize: itemDetails.size,
+          selected_properties: [[formattedProperties]], // Include the selected properties
         },
       ]);
       toast.success("Item added to cart!", {
@@ -320,6 +335,217 @@ const InHouseApplication = () => {
     });
   };
 
+  const validateCustomerDetails = () => {
+    const { name, email, mobile, address } = customerDetails;
+    if (!name)
+      toast.error("Name is required", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    if (!email)
+      toast.error("Email is required", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    if (!mobile)
+      toast.error("Mobile number is required", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    if (!address)
+      toast.error("Address is required", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    return name && email && mobile && address;
+  };
+
+  const generateInvoice = async (checkoutData) => {
+    const {
+      name_of_buyer,
+      email_of_buyer,
+      phone_number_of_buyer,
+      address_of_buyer,
+      items,
+      total_price,
+      order_id,
+      payment_type,
+    } = checkoutData;
+
+    const doc = new jsPDF();
+
+    // Set document properties
+    doc.setProperties({
+      title: `Invoice_${order_id}`,
+      subject: "Invoice",
+      author: "THE NYLON HUB",
+      keywords: "generated, javascript, web 2.0, ajax",
+      creator: "TNH SALES TEAM",
+    });
+
+    // Add header
+    doc.setFontSize(22);
+    doc.setTextColor(40);
+    doc.text("INVOICE", 105, 20, null, null, "center");
+
+    // Add company info
+    doc.setFontSize(10);
+    doc.text("THE NYLON HUB LTD", 20, 30);
+    doc.text("29, OJUWOYE STREET", 20, 35);
+    doc.text("MUSHIN, LAGOS STATE", 20, 40);
+    doc.text("Phone: (555) 555-5555", 20, 45);
+    doc.text("Email: info@company.com", 20, 50);
+
+    // Add customer info
+    doc.setFontSize(12);
+    doc.text("Bill To:", 20, 60);
+    doc.setFontSize(10);
+    doc.text(`Name: ${name_of_buyer}`, 20, 65);
+    doc.text(`Email: ${email_of_buyer}`, 20, 70);
+    doc.text(`Phone: ${phone_number_of_buyer}`, 20, 75);
+    doc.text(`Address: ${address_of_buyer}`, 20, 80);
+
+    // Add invoice details
+    doc.setFontSize(12);
+    doc.text(`Order ID: ${order_id}`, 20, 90);
+    doc.text(`Payment Method: ${payment_type}`, 20, 95);
+    doc.text(`Total Price: ${formatter.format(total_price)}`, 20, 100);
+
+    // Add table headers
+    doc.setFontSize(10);
+    doc.text("Item", 20, 110);
+    doc.text("Color", 70, 110);
+    doc.text("Size", 100, 110);
+    doc.text("Capacity", 130, 110);
+    doc.text("Price", 160, 110);
+    doc.text("Quantity", 180, 110);
+
+    // Add table content
+    let y = 120;
+    items.forEach((item, index) => {
+      doc.text(`${item.product_name}`, 20, y);
+      item.selected_properties.forEach((propertiesArray) => {
+        propertiesArray.forEach((property) => {
+          doc.text(`${property.color}`, 70, y);
+          doc.text(`${property.size}`, 100, y);
+          doc.text(`${property.capacity}`, 130, y);
+          doc.text(`${formatter.format(property.price)}`, 160, y);
+          doc.text(`${property.quantity}`, 180, y);
+          y += 10;
+        });
+      });
+    });
+
+    // Add footer
+    doc.setFontSize(10);
+    doc.text("Thank you for your business!", 105, y + 20, null, null, "center");
+
+    // Save the PDF
+    doc.save(`Invoice_${order_id}.pdf`);
+  };
+
+  const handleCheckout = async () => {
+    if (!validateCustomerDetails()) {
+      return;
+    }
+
+    setLoading(true);
+
+    const checkoutData = {
+      name_of_buyer: customerDetails.name,
+      email_of_buyer: customerDetails.email,
+      phone_number_of_buyer: customerDetails.mobile,
+      address_of_buyer: customerDetails.address,
+      items: cart.map((item) => ({
+        _id: item._id,
+        product_name: item.product_name,
+        selected_properties: item.selected_properties.map((propertiesArray) =>
+          propertiesArray.map((property) => ({
+            color: property.color,
+            size: property.size,
+            capacity: property.capacity,
+            price: property.price,
+            quantity: property.quantity,
+          }))
+        ),
+      })),
+      total_price: cart.reduce((acc, item) => acc + item.totalCost, 0),
+      source: "inhouse",
+      order_id: customerDetails.orderId,
+      payment_type: customerDetails.paymentMethod,
+      ref:
+        customerDetails.paymentMethod === "transfer" ? customerDetails.ref : {},
+    };
+
+    try {
+      const response = await axios.post(
+        "https://pbwkbq0l-4000.uks1.devtunnels.ms/nylonhub/v1/products/cart",
+        checkoutData
+      );
+      if (response.status === 200) {
+        toast.success("Checkout successful!", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+
+        // Generate invoice PDF
+        await generateInvoice(checkoutData);
+
+        // Reset form after successful checkout
+        setCustomerDetails({
+          name: "",
+          email: "",
+          mobile: "",
+          address: "",
+          paymentMethod: "cash",
+          orderId: generateOrderId("", "NYLONHUB"),
+          ref: {},
+        });
+        setCart([]);
+        setSelectedProduct(null);
+        setSearchTerm("");
+        setQuantity(1);
+        setTotalCost(0);
+        setDimension([]);
+        setItemDetails({});
+        setSelectedColor(null);
+        setSelectedId(null);
+        setSelectedColorId(null);
+      } else {
+        toast.error("Checkout failed. Please try again.", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast.error("Checkout failed. Please try again.", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center p-4 space-y-4 md:flex-row md:space-y-0 md:space-x-4">
       <CustomerDetails
@@ -381,12 +607,22 @@ const InHouseApplication = () => {
           </div>
         </div>
       )}
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
+            <h3 className="text-lg font-bold mb-4">
+              Processing your order, please wait...
+            </h3>
+          </div>
+        </div>
+      )}
       <Cart
         cart={cart}
         formatter={formatter}
         handleCartQuantityChange={handleCartQuantityChange}
         handleRemoveFromCart={handleRemoveFromCart}
         handleClearCart={handleClearCart}
+        handleCheckout={handleCheckout}
       />
     </div>
   );

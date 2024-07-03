@@ -1,6 +1,10 @@
-import React from 'react';
+import React from "react";
 
-const CustomerDetails = ({ customerDetails, handleInputChange, handleReset }) => {
+const CustomerDetails = ({
+  customerDetails,
+  handleInputChange,
+  handleReset,
+}) => {
   return (
     <div className="flex flex-col w-full md:w-1/2 bg-white shadow-md rounded-lg p-4">
       <h2 className="text-xl font-bold mb-4">Customer Details</h2>
@@ -25,6 +29,14 @@ const CustomerDetails = ({ customerDetails, handleInputChange, handleReset }) =>
         name="mobile"
         placeholder="Mobile Number"
         value={customerDetails.mobile}
+        onChange={handleInputChange}
+        className="mb-2 p-2 border rounded w-full"
+      />
+      <input
+        type="text"
+        name="address"
+        placeholder="Address"
+        value={customerDetails.address}
         onChange={handleInputChange}
         className="mb-2 p-2 border rounded w-full"
       />

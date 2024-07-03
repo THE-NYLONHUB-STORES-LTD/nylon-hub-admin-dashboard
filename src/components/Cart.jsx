@@ -1,7 +1,13 @@
 import React from "react";
 import { FaTrash } from "react-icons/fa";
 
-const Cart = ({ cart, formatter, handleRemoveFromCart, handleClearCart }) => {
+const Cart = ({
+  cart,
+  formatter,
+  handleRemoveFromCart,
+  handleClearCart,
+  handleCheckout,
+}) => {
   const totalPrice = cart.reduce((sum, item) => sum + item.totalCost, 0);
 
   return (
@@ -50,6 +56,12 @@ const Cart = ({ cart, formatter, handleRemoveFromCart, handleClearCart }) => {
           <p className="text-lg font-bold mt-4">
             Total: {formatter.format(totalPrice)}
           </p>
+          <button
+            onClick={handleCheckout}
+            className="bg-green-500 text-white p-2 rounded w-full mt-4"
+          >
+            Checkout
+          </button>
         </>
       )}
     </div>
