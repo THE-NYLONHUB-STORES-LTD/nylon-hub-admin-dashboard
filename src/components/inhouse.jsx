@@ -6,6 +6,8 @@ import CustomerDetails from "./CustomerDetails";
 import ProductSelection from "./ProductSelection";
 import ProductDetails from "./ProductDetails";
 import Cart from "./Cart";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const generateOrderId = (customerName, businessName = "NYLONHUB") => {
   const customerInitials = customerName
@@ -358,6 +360,90 @@ const InHouseApplication = () => {
     return name && email && mobile && address;
   };
 
+  const generateInvoice = async (checkoutData) => {
+    const {
+      name_of_buyer,
+      email_of_buyer,
+      phone_number_of_buyer,
+      address_of_buyer,
+      items,
+      total_price,
+      order_id,
+      payment_type,
+    } = checkoutData;
+
+    const doc = new jsPDF();
+
+    // Set document properties
+    doc.setProperties({
+      title: `Invoice_${order_id}`,
+      subject: "Invoice",
+      author: "THE NYLON HUB",
+      keywords: "generated, javascript, web 2.0, ajax",
+      creator: "TNH SALES TEAM",
+    });
+
+    // Add header
+    doc.setFontSize(22);
+    doc.setTextColor(40);
+    doc.text("INVOICE", 105, 20, null, null, "center");
+
+    // Add company info
+    doc.setFontSize(10);
+    doc.text("THE NYLON HUB LTD", 20, 30);
+    doc.text("29, OJUWOYE STREET", 20, 35);
+    doc.text("MUSHIN, LAGOS STATE", 20, 40);
+    doc.text("Phone: (555) 555-5555", 20, 45);
+    doc.text("Email: info@company.com", 20, 50);
+
+    // Add customer info
+    doc.setFontSize(12);
+    doc.text("Bill To:", 20, 60);
+    doc.setFontSize(10);
+    doc.text(`Name: ${name_of_buyer}`, 20, 65);
+    doc.text(`Email: ${email_of_buyer}`, 20, 70);
+    doc.text(`Phone: ${phone_number_of_buyer}`, 20, 75);
+    doc.text(`Address: ${address_of_buyer}`, 20, 80);
+
+    // Add invoice details
+    doc.setFontSize(12);
+    doc.text(`Order ID: ${order_id}`, 20, 90);
+    doc.text(`Payment Method: ${payment_type}`, 20, 95);
+    doc.text(`Total Price: ${formatter.format(total_price)}`, 20, 100);
+
+    // Add table headers
+    doc.setFontSize(10);
+    doc.text("Item", 20, 110);
+    doc.text("Color", 70, 110);
+    doc.text("Size", 100, 110);
+    doc.text("Capacity", 130, 110);
+    doc.text("Price", 160, 110);
+    doc.text("Quantity", 180, 110);
+
+    // Add table content
+    let y = 120;
+    items.forEach((item, index) => {
+      doc.text(`${item.product_name}`, 20, y);
+      item.selected_properties.forEach((propertiesArray) => {
+        propertiesArray.forEach((property) => {
+          doc.text(`${property.color}`, 70, y);
+          doc.text(`${property.size}`, 100, y);
+          doc.text(`${property.capacity}`, 130, y);
+          doc.text(`${formatter.format(property.price)}`, 160, y);
+          doc.text(`${property.quantity}`, 180, y);
+          y += 10;
+        });
+      });
+    });
+
+    // Add footer
+    doc.setFontSize(10);
+    doc.text("Thank you for your business!", 105, y + 20, null, null, "center");
+
+    // Save the PDF
+    doc.save(`Invoice_${order_id}.pdf`);
+  };
+
   const handleCheckout = async () => {
     if (!validateCustomerDetails()) {
       return;
@@ -407,6 +493,9 @@ const InHouseApplication = () => {
           progress: undefined,
           theme: "dark",
         });
+
+        // Generate invoice PDF
+        await generateInvoice(checkoutData);
 
         // Reset form after successful checkout
         setCustomerDetails({

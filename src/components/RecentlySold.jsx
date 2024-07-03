@@ -17,10 +17,15 @@ const RecentlySold = () => {
   const [itemsPerPage] = useState(4);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchField, setSearchField] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    filterData();
+  }, [statusFilter, searchQuery, searchField]);
 
   const fetchData = async () => {
     try {
@@ -83,12 +88,30 @@ const RecentlySold = () => {
   const handleShowAll = () => {
     setFilteredData(recentlySoldData);
     setSearchQuery("");
+    setStatusFilter("");
     setCurrentPage(1);
   };
 
   const handleRefresh = () => {
     setIsLoading(true);
     fetchData();
+  };
+
+  const filterData = () => {
+    let filtered = recentlySoldData;
+
+    if (statusFilter) {
+      filtered = filtered.filter((item) => item.order_status === statusFilter);
+    }
+
+    if (searchQuery && searchField) {
+      filtered = filtered.filter((item) =>
+        item[searchField].toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    setFilteredData(filtered);
+    setCurrentPage(1);
   };
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -141,6 +164,15 @@ const RecentlySold = () => {
               </button>
             </>
           )}
+          <select
+            className="border border-gray-300 p-2 rounded-lg text-gray-700 bg-white shadow-sm focus:ring focus:ring-blue-200 focus:outline-none w-full sm:w-auto"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Confirmed</option>
+          </select>
           <button
             className="bg-[#ef6426] text-black p-2 rounded-lg shadow-md hover:bg-gray-600 w-full sm:w-auto"
             onClick={handleShowAll}
